@@ -104,5 +104,6 @@ async fn main(){
     let blockhash = rpc_client.get_latest_blockhash().unwrap();
     tx.try_sign(&[&nonce_keypair, &wallet], blockhash);
 
-
+    let signature=rpc_client.send_and_confirm_transaction(&tx).unwrap();
+    println!("{}", signature);
 }
