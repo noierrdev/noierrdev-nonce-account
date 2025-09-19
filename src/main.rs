@@ -90,20 +90,35 @@ async fn main(){
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
 
+    ////////////////////////////
+    // let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
+    // let instr = system_instruction::create_nonce_account(
+    //     &wallet.pubkey(),
+    //     &nonce_keypair.pubkey(),
+    //     &wallet.pubkey(), // Make the fee wallet the nonce account authority
+    //     nonce_rent,
+    // );
 
-    let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
-    let instr = system_instruction::create_nonce_account(
-        &wallet.pubkey(),
-        &nonce_keypair.pubkey(),
-        &wallet.pubkey(), // Make the fee wallet the nonce account authority
-        nonce_rent,
-    );
+    // let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
 
-    let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
+    // let blockhash = rpc_client.get_latest_blockhash().unwrap();
+    // tx.try_sign(&[&nonce_keypair, &wallet], blockhash);
 
-    let blockhash = rpc_client.get_latest_blockhash().unwrap();
-    tx.try_sign(&[&nonce_keypair, &wallet], blockhash);
+    // let signature=rpc_client.send_and_confirm_transaction(&tx).unwrap();
+    // println!("{}", signature);
+    ///////////////////////////////////
+    // let nonce_instruction = system_instruction::advance_nonce_account(
+    //     &nonce.pubkey(),
+    //     &wallet.pubkey(),
+    // );
+    let nonce_account_data = rpc.get_account(&nonce.pubkey()).unwrap();
+    let nonce_state =
+        solana_sdk::nonce::state::State::from_account(&nonce_account_data).unwrap();
 
-    let signature=rpc_client.send_and_confirm_transaction(&tx).unwrap();
-    println!("{}", signature);
+    let (nonce_blockhash, _fee_calculator) = match nonce_state {
+        State::Initialized(data) => (data.blockhash, data.fee_calculator),
+        _ => panic!("Nonce account not initialized"),
+    };
+
+    println!("Using durable nonce blockhash: {}", nonce_blockhash);
 }
