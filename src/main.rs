@@ -108,15 +108,15 @@ async fn main(){
     // println!("{}", signature);
     ///////////////////////////////////
     // let nonce_instruction = system_instruction::advance_nonce_account(
-    //     &nonce.pubkey(),
+    //     &nonce_keypair.pubkey(),
     //     &wallet.pubkey(),
     // );
-    let nonce_account_data = rpc.get_account(&nonce.pubkey()).unwrap();
+    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
     let nonce_state =
         solana_sdk::nonce::state::State::from_account(&nonce_account_data).unwrap();
 
     let (nonce_blockhash, _fee_calculator) = match nonce_state {
-        State::Initialized(data) => (data.blockhash, data.fee_calculator),
+        State::Initialized(data) => (data.blockhash(), data.fee_calculator),
         _ => panic!("Nonce account not initialized"),
     };
 
