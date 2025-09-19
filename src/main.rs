@@ -74,11 +74,15 @@ async fn main(){
     let private_key_bytes = bs58::decode(private_key_str)
         .into_vec().unwrap();
     let wallet =Arc::new(Keypair::from_bytes(&private_key_bytes).unwrap());
-    let public_key= wallet.pubkey();
-    println!("Public Key: {}", public_key.to_string());
+    let wallet_public_key= wallet.pubkey();
+    println!("Public Key of wallet: {}", wallet_public_key.to_string());
 
-    let wallet_monitor=wallet.clone();
-    let wallet_escape=wallet.clone();
+    let nonce_key_str = env::var("NONCE_KEY").unwrap();
+    let nonce_key_bytes = bs58::decode(nonce_key_str)
+        .into_vec().unwrap();
+    let wallet =Arc::new(Keypair::from_bytes(&nonce_key_bytes).unwrap());
+    let nonce_public_key= wallet.pubkey();
+    println!("Public Key on NONCE ACCOUNT: {}", nonce_public_key.to_string());
 
 
     //Create web3 connection
