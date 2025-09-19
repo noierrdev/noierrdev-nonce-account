@@ -118,6 +118,6 @@ async fn main(){
     //     _ => panic!("Nonce account not initialized"),
     // };
     let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
-    let durable_nonce: EncodeBuilder<'_, I> = bs58::encode(nonce_account_data.data[40..72].try_into().unwrap());
+    let durable_nonce=bs58::encode(nonce_account_data.data[40..72].try_into().unwrap()).into_string();
     println!("{:?}, {:?}", authority, durable_nonce.into_string());
 }
