@@ -112,12 +112,11 @@ async fn main(){
     //     &wallet.pubkey(),
     // );
     let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
-    let nonce_state =state::Data::try_from(nonce_account_data.data).unwrap();
 
-    // let (nonce_blockhash, _fee_calculator) = match nonce_state {
-    //     State::Initialized(data) => (data.blockhash(), data.fee_calculator),
-    //     _ => panic!("Nonce account not initialized"),
-    // };
+    let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
+        State::Initialized(data) => (data.blockhash(), data.fee_calculator),
+        _ => panic!("Nonce account not initialized"),
+    };
 
     // println!("Using durable nonce blockhash: {}", nonce_blockhash);
 }
