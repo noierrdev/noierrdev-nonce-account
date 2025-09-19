@@ -99,7 +99,7 @@ async fn main(){
     let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
 
     let blockhash = rpc_client.get_latest_blockhash().unwrap();
-    tx.try_sign(&[&nonce_account, wallet], blockhash);
+    tx.try_sign(&[&nonce_account, &wallet], blockhash);
 
 
 }
