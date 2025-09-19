@@ -40,7 +40,8 @@ use solana_sdk::{
     signature::{Keypair,Signature,Signer},
     pubkey::Pubkey,
     commitment_config::CommitmentConfig,
-    transaction::VersionedTransaction
+    transaction::{VersionedTransaction, Transaction},
+    nonce::State
 };
 use solana_transaction_status::UiTransactionEncoding;
 
@@ -83,5 +84,21 @@ async fn main(){
     let rpc_url = env::var("RPC_API").unwrap();
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
+
+    let nonce_account = Keypair::new();
+
+    let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
+    let instr = system_instruction::create_nonce_account(
+        &payer.pubkey(),
+        &nonce_account.pubkey(),
+        &payer.pubkey(), // Make the fee payer the nonce account authority
+        nonce_rent,
+    );
+
+    let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
+
+    let blockhash = client.get_latest_blockhash().unwrap();
+    tx.try_sign(&[&nonce_account, payer], blockhash);
+
 
 }
