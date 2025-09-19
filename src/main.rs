@@ -117,6 +117,7 @@ async fn main(){
     //     State::Initialized(data) => (data.blockhash(), data.fee_calculator),
     //     _ => panic!("Nonce account not initialized"),
     // };
-
-    println!("Using durable nonce blockhash: {:?}", nonce_account_data);
+    let authority = Pubkey::new_from_array(nonce_account_data[8..40].try_into().unwrap());
+    let durable_nonce = bs58::encode(nonce_account_data[40..72].try_into().unwrap());
+    println!("{:?}, {}", authority, durable_nonce);
 }
