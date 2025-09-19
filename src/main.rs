@@ -89,9 +89,9 @@ async fn main(){
 
     let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
     let instr = system_instruction::create_nonce_account(
-        &payer.pubkey(),
+        &wallet.pubkey(),
         &nonce_account.pubkey(),
-        &payer.pubkey(), // Make the fee payer the nonce account authority
+        &wallet.pubkey(), // Make the fee wallet the nonce account authority
         nonce_rent,
     );
 
