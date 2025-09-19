@@ -80,8 +80,8 @@ async fn main(){
     let nonce_key_str = env::var("NONCE_KEY").unwrap();
     let nonce_key_bytes = bs58::decode(nonce_key_str)
         .into_vec().unwrap();
-    let wallet =Arc::new(Keypair::from_bytes(&nonce_key_bytes).unwrap());
-    let nonce_public_key= wallet.pubkey();
+    let nonce_keypair =Arc::new(Keypair::from_bytes(&nonce_key_bytes).unwrap());
+    let nonce_public_key= nonce_keypair.pubkey();
     println!("Public Key on NONCE ACCOUNT: {}", nonce_public_key.to_string());
 
 
@@ -90,12 +90,11 @@ async fn main(){
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
 
-    let nonce_account = Keypair::new();
 
     let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
     let instr = system_instruction::create_nonce_account(
         &wallet.pubkey(),
-        &nonce_account.pubkey(),
+        &nonce_keypair.pubkey(),
         &wallet.pubkey(), // Make the fee wallet the nonce account authority
         nonce_rent,
     );
@@ -103,7 +102,7 @@ async fn main(){
     let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
 
     let blockhash = rpc_client.get_latest_blockhash().unwrap();
-    tx.try_sign(&[&nonce_account, &wallet], blockhash);
+    tx.try_sign(&[&nonce_keypair, &wallet], blockhash);
 
 
 }
