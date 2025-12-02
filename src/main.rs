@@ -101,21 +101,21 @@ async fn main(){
     };
 
     ////////////////////////////
-    let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
-    let create_nonce_instruction = system_instruction::create_nonce_account(
-        &wallet.pubkey(),
-        &nonce_keypair.pubkey(),
-        &wallet.pubkey(), // Make the fee wallet the nonce account authority
-        nonce_rent,
-    );
-    let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
-    let v0_message= v0::Message::try_compile(
-        &wallet.pubkey(),
-        &create_nonce_instruction,
-        &[],
-        recent_blockhash,
-    ).unwrap();
-    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet, nonce_keypair]).unwrap();
+    // let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
+    // let create_nonce_instruction = system_instruction::create_nonce_account(
+    //     &wallet.pubkey(),
+    //     &nonce_keypair.pubkey(),
+    //     &wallet.pubkey(), // Make the fee wallet the nonce account authority
+    //     nonce_rent,
+    // );
+    // let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
+    // let v0_message= v0::Message::try_compile(
+    //     &wallet.pubkey(),
+    //     &create_nonce_instruction,
+    //     &[],
+    //     recent_blockhash,
+    // ).unwrap();
+    // let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet, nonce_keypair]).unwrap();
     // let signature=sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
     // println!("{}", signature);
     ///////////////////////////////////
@@ -153,4 +153,61 @@ async fn main(){
     // let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
     // let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
     // println!("https://solscan.io/tx/{result}");
+}
+
+pub fn create_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_keypair :&Keypair)
+->VersionedTransaction
+{
+    let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
+    let create_nonce_instruction = system_instruction::create_nonce_account(
+        &wallet.pubkey(),
+        &nonce_keypair.pubkey(),
+        &wallet.pubkey(), // Make the fee wallet the nonce account authority
+        nonce_rent,
+    );
+    let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
+    let v0_message= v0::Message::try_compile(
+        &wallet.pubkey(),
+        &create_nonce_instruction,
+        &[],
+        recent_blockhash,
+    ).unwrap();
+    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet, nonce_keypair]).unwrap();
+    v0_transaction
+
+}
+
+pub fn test_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_address : &str)
+->VersionedTransaction
+{
+    let nonce_account = Pubkey::from_str_const(nonce_address);
+    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
+    let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
+    let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
+    let durable_nonce = Hash::new_from_array(nonce_bytes);
+    let recent_blockhash = durable_nonce;
+
+    let mut instructions = vec![];
+
+    let nonce_instruction = system_instruction::advance_nonce_account(
+        &nonce_keypair.pubkey(),
+        &wallet.pubkey(),
+    );
+    instructions.push(nonce_instruction);
+
+    let transfer_instruction = system_instruction::transfer(
+        &wallet.pubkey(),
+        &wallet.pubkey(),
+        10000
+    );
+    instructions.push(transfer_instruction);
+
+    let v0_message= v0::Message::try_compile(
+        &wallet.pubkey(),
+        &instructions,
+        &[],
+        recent_blockhash,
+    ).unwrap();
+    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
+    v0_transaction
 }
