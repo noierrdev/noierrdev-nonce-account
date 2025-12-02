@@ -111,7 +111,7 @@ async fn main(){
     let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
     let v0_message= v0::Message::try_compile(
         &wallet.pubkey(),
-        &[create_nonce_instruction],
+        &vec![create_nonce_instruction],
         &[],
         recent_blockhash,
     ).unwrap();
