@@ -181,7 +181,7 @@ pub fn test_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_addr
 ->VersionedTransaction
 {
     let nonce_account = Pubkey::from_str_const(nonce_address);
-    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
+    let nonce_account_data = rpc_client.get_account(&nonce_account).unwrap();
     let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
     let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
     let durable_nonce = Hash::new_from_array(nonce_bytes);
@@ -190,7 +190,7 @@ pub fn test_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_addr
     let mut instructions = vec![];
 
     let nonce_instruction = system_instruction::advance_nonce_account(
-        &nonce_keypair.pubkey(),
+        &nonce_account,
         &wallet.pubkey(),
     );
     instructions.push(nonce_instruction);
