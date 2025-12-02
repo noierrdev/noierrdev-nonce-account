@@ -74,7 +74,7 @@ pub fn create_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_ke
     let create_nonce_instruction = system_instruction::create_nonce_account(
         &wallet.pubkey(),
         &nonce_keypair.pubkey(),
-        &wallet.pubkey(), // Make the fee wallet the nonce account authority
+        &wallet.pubkey(),
         nonce_rent,
     );
     let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
