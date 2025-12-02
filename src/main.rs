@@ -54,11 +54,11 @@ async fn main(){
     let nonce_public_key= nonce_keypair.pubkey();
     println!("Public Key on NONCE ACCOUNT: {}", nonce_public_key.to_string());
     //Create web3 connection
-    let rpc_url = env::var("RPC_API").unwrap();
+    let rpc_url = env::var("RPC_API").unwrap_or("http://localhost:8899".to_string());
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
 
-    let sender_url = env::var("RPC_API").unwrap_or("http://localhost:4040");
+    let sender_url = env::var("RPC_API").unwrap_or("http://localhost:4040".to_string());
     let sender_client = RpcClient::new_with_commitment(sender_url.to_string(),commitment);
 
     let config = RpcSendTransactionConfig {
