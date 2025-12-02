@@ -40,7 +40,8 @@ use solana_sdk::{
     signature::{Keypair,Signature,Signer},
     pubkey::Pubkey,
     commitment_config::CommitmentConfig,
-    transaction::{VersionedTransaction, Transaction},
+    message::{Message, v0, VersionedMessage},
+    transaction::{Transaction, VersionedTransaction},
     nonce::{State, state},
     system_instruction
 };
@@ -107,16 +108,28 @@ async fn main(){
     // let signature=rpc_client.send_and_confirm_transaction(&tx).unwrap();
     // println!("{}", signature);
     ///////////////////////////////////
+
+
+    // let recent_blockhash = rpc
     // let nonce_instruction = system_instruction::advance_nonce_account(
     //     &nonce_keypair.pubkey(),
     //     &wallet.pubkey(),
     // );
-    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
 
-    // let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
-    //     State::Initialized(data) => (data.blockhash(), data.fee_calculator),
-    //     _ => panic!("Nonce account not initialized"),
-    // };
+    // let v0_message= v0::Message::try_compile(
+    //     &wallet_pubkey,
+    //     &instructions,
+    //     &[],
+    //     recent_blockhash,
+    // ).unwrap();
+
+
+
+    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
+    let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
+        State::Initialized(data) => (data.blockhash(), data.fee_calculator),
+        _ => panic!("Nonce account not initialized"),
+    };
     let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
     let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
     let durable_nonce=bs58::encode(nonce_bytes).into_string();
