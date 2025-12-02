@@ -115,7 +115,7 @@ async fn main(){
         &[],
         recent_blockhash,
     ).unwrap();
-    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
+    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet, nonce_keypair]).unwrap();
     // let signature=sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
     // println!("{}", signature);
     ///////////////////////////////////
