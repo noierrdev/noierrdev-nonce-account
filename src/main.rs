@@ -53,8 +53,6 @@ use spl_associated_token_account::{get_associated_token_address, get_associated_
 use spl_token_2022::{id as token_2022_program_id};
 
 use rustls::{
-    // ClientConfig as RustlsConfig,
-    // crypto::CryptoProvider,
     crypto::ring::default_provider as crypto_default_provider,
     pki_types::PrivatePkcs8KeyDer,
     pki_types::CertificateDer,
@@ -64,8 +62,8 @@ use rustls::{
 #[tokio::main]
 async fn main(){
 
-    let crypto_provider= crypto_default_provider();
-    crypto_provider.install_default();
+    // let crypto_provider= crypto_default_provider();
+    // crypto_provider.install_default();
     
     dotenv::dotenv().ok();
     let http_client=Client::new();
@@ -86,8 +84,6 @@ async fn main(){
     let nonce_keypair =Arc::new(Keypair::from_bytes(&nonce_key_bytes).unwrap());
     let nonce_public_key= nonce_keypair.pubkey();
     println!("Public Key on NONCE ACCOUNT: {}", nonce_public_key.to_string());
-
-
     //Create web3 connection
     let rpc_url = env::var("RPC_API").unwrap();
     let commitment = CommitmentConfig::processed();
@@ -99,60 +95,6 @@ async fn main(){
         skip_preflight: true,
         .. RpcSendTransactionConfig::default()
     };
-
-    ////////////////////////////
-    // let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
-    // let create_nonce_instruction = system_instruction::create_nonce_account(
-    //     &wallet.pubkey(),
-    //     &nonce_keypair.pubkey(),
-    //     &wallet.pubkey(), // Make the fee wallet the nonce account authority
-    //     nonce_rent,
-    // );
-    // let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
-    // let v0_message= v0::Message::try_compile(
-    //     &wallet.pubkey(),
-    //     &create_nonce_instruction,
-    //     &[],
-    //     recent_blockhash,
-    // ).unwrap();
-    // let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet, nonce_keypair]).unwrap();
-    // let signature=sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
-    // println!("{}", signature);
-    ///////////////////////////////////
-   
-
-
-
-    // let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
-    // let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
-    // let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
-    // let durable_nonce = Hash::new_from_array(nonce_bytes);
-    // let recent_blockhash = durable_nonce;
-
-    // let mut instructions = vec![];
-
-    // let nonce_instruction = system_instruction::advance_nonce_account(
-    //     &nonce_keypair.pubkey(),
-    //     &wallet.pubkey(),
-    // );
-    // instructions.push(nonce_instruction);
-
-    // let transfer_instruction = system_instruction::transfer(
-    //     &wallet.pubkey(),
-    //     &wallet.pubkey(),
-    //     10000
-    // );
-    // instructions.push(transfer_instruction);
-
-    // let v0_message= v0::Message::try_compile(
-    //     &wallet.pubkey(),
-    //     &instructions,
-    //     &[],
-    //     recent_blockhash,
-    // ).unwrap();
-    // let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
-    // let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
-    // println!("https://solscan.io/tx/{result}");
 }
 
 pub fn create_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_keypair :&Keypair)
