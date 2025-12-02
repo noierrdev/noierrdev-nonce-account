@@ -65,6 +65,9 @@ async fn main(){
         skip_preflight: true,
         .. RpcSendTransactionConfig::default()
     };
+
+    let create_nonce_tx = create_nonce_account(&rpc_client, &wallet, &nonce_keypair);
+    let test_nonce_tx = test_nonce_account(&rpc_client, &wallet, &nonce_keypair.pubkey().to_string());
 }
 
 pub fn create_nonce_account(rpc_client : &RpcClient, wallet : &Keypair, nonce_keypair :&Keypair)
