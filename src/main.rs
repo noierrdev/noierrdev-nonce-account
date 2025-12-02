@@ -123,46 +123,34 @@ async fn main(){
 
 
 
-    let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
-    // let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
-    //     State::Initialized(data) => (data.blockhash(), data.fee_calculator),
-    //     _ => panic!("Nonce account not initialized"),
-    // };
-    let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
-    let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
-    // let durable_nonce=bs58::encode(nonce_bytes).into_string();
-    let durable_nonce = Hash::new_from_array(nonce_bytes);
+    // let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
+    // let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
+    // let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
+    // let durable_nonce = Hash::new_from_array(nonce_bytes);
+    // let recent_blockhash = durable_nonce;
 
+    // let mut instructions = vec![];
 
-    let recent_blockhash = durable_nonce;
+    // let nonce_instruction = system_instruction::advance_nonce_account(
+    //     &nonce_keypair.pubkey(),
+    //     &wallet.pubkey(),
+    // );
+    // instructions.push(nonce_instruction);
 
-    let mut instructions = vec![];
+    // let transfer_instruction = system_instruction::transfer(
+    //     &wallet.pubkey(),
+    //     &wallet.pubkey(),
+    //     10000
+    // );
+    // instructions.push(transfer_instruction);
 
-
-    let nonce_instruction = system_instruction::advance_nonce_account(
-        &nonce_keypair.pubkey(),
-        &wallet.pubkey(),
-    );
-    instructions.push(nonce_instruction);
-
-    let transfer_instruction = system_instruction::transfer(
-        &wallet.pubkey(),
-        &wallet.pubkey(),
-        10000
-    );
-    instructions.push(transfer_instruction);
-
-    let v0_message= v0::Message::try_compile(
-        &wallet.pubkey(),
-        &instructions,
-        &[],
-        recent_blockhash,
-    ).unwrap();
-    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
-
-    
-
-    let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
-
-    println!("https://solscan.io/tx/{result}");
+    // let v0_message= v0::Message::try_compile(
+    //     &wallet.pubkey(),
+    //     &instructions,
+    //     &[],
+    //     recent_blockhash,
+    // ).unwrap();
+    // let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
+    // let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
+    // println!("https://solscan.io/tx/{result}");
 }
