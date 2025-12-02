@@ -58,7 +58,8 @@ async fn main(){
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
 
-    let sender_client = RpcClient::new_with_commitment("http://localhost:4040".to_string(),commitment);
+    let sender_url = env::var("RPC_API").unwrap_or("http://localhost:4040");
+    let sender_client = RpcClient::new_with_commitment(sender_url.to_string(),commitment);
 
     let config = RpcSendTransactionConfig {
         skip_preflight: true,
