@@ -135,13 +135,13 @@ async fn main(){
 
     let transfer_instruction = system_instruction::transfer(
         &wallet.pubkey(),
-        &wallet_pubkey(),
+        &wallet.pubkey(),
         10000
     );
     instructions.push(transfer_instruction)
 
     let v0_message= v0::Message::try_compile(
-        &wallet_pubkey,
+        &wallet.pubkey(),
         &instructions,
         &[],
         recent_blockhash,
