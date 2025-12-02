@@ -133,5 +133,5 @@ async fn main(){
     let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
     let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
     let durable_nonce=bs58::encode(nonce_bytes).to_string();
-    println!("{}, {}", authority, durable_nonce);
+    println!("{:}, {}", authority, durable_nonce);
 }
