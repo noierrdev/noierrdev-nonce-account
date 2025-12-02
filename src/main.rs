@@ -140,7 +140,7 @@ async fn main(){
         &wallet.pubkey(),
         10000
     );
-    instructions.push(transfer_instruction)
+    instructions.push(transfer_instruction);
 
     let v0_message= v0::Message::try_compile(
         &wallet.pubkey(),
