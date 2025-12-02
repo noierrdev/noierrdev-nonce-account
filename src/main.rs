@@ -148,7 +148,10 @@ async fn main(){
         &[],
         recent_blockhash,
     ).unwrap();
+    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
+
+    let result = rpc_client.send_and_confirm_transaction(&v0_transaction).unwrap();
 
 
-    println!("{:}, {}", authority, durable_nonce);
+    println!("https://solscan.io/tx/{result}");
 }
