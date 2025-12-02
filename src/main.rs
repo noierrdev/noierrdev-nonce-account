@@ -1,5 +1,3 @@
-use clap::Parser;
-use futures::{ stream::StreamExt};
 use std::{
     env, collections::{HashMap, HashSet},
     time::{ Instant, SystemTime, UNIX_EPOCH},
@@ -41,10 +39,6 @@ use solana_sdk::{
 async fn main(){
     
     dotenv::dotenv().ok();
-    let http_client=Client::new();
-
-    let http_client_escape=http_client.clone();
-
     //Initialize wallet from private key of .env
     let private_key_str = env::var("PRIVATE_KEY").unwrap();
     let private_key_bytes = bs58::decode(private_key_str)
