@@ -92,6 +92,8 @@ async fn main(){
     let commitment = CommitmentConfig::processed();
     let rpc_client = RpcClient::new_with_commitment(rpc_url.to_string(),commitment);
 
+    let sender_client = RpcClient::new_with_commitment("http://localhost:4040".to_string(),commitment);
+
     ////////////////////////////
     // let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
     // let instr = system_instruction::create_nonce_account(
@@ -150,8 +152,7 @@ async fn main(){
     ).unwrap();
     let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
 
-    let result = rpc_client.send_and_confirm_transaction(&v0_transaction).unwrap();
-
+    let result = sender_client.send_and_confirm_transaction(&v0_transaction).unwrap();
 
     println!("https://solscan.io/tx/{result}");
 }
