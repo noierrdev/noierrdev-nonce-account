@@ -35,6 +35,7 @@ use solana_client::{
     tpu_client::{TpuClient, TpuClientConfig},
     rpc_response::RpcContactInfo
 };
+use solana_client::rpc_config::RpcSendTransactionConfig;
 use solana_sdk::{
     bs58,
     hash::Hash,
@@ -152,7 +153,12 @@ async fn main(){
     ).unwrap();
     let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
 
-    let result = sender_client.send_and_confirm_transaction(&v0_transaction).unwrap();
+    let config = RpcSendTransactionConfig {
+        skip_preflight: true,
+        .. RpcSendTransactionConfig::default()
+    };
+
+    let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
 
     println!("https://solscan.io/tx/{result}");
 }
