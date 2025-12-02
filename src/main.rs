@@ -126,10 +126,10 @@ async fn main(){
 
 
     let nonce_account_data = rpc_client.get_account(&nonce_keypair.pubkey()).unwrap();
-    let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
-        State::Initialized(data) => (data.blockhash(), data.fee_calculator),
-        _ => panic!("Nonce account not initialized"),
-    };
+    // let (nonce_blockhash, _fee_calculator) = match nonce_account_data {
+    //     State::Initialized(data) => (data.blockhash(), data.fee_calculator),
+    //     _ => panic!("Nonce account not initialized"),
+    // };
     let authority = Pubkey::new_from_array(nonce_account_data.data[8..40].try_into().unwrap());
     let nonce_bytes: [u8; 32] = nonce_account_data.data[40..72].try_into().unwrap();
     let durable_nonce=bs58::encode(nonce_bytes).into_string();
