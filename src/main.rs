@@ -95,21 +95,28 @@ async fn main(){
 
     let sender_client = RpcClient::new_with_commitment("http://localhost:4040".to_string(),commitment);
 
+    let config = RpcSendTransactionConfig {
+        skip_preflight: true,
+        .. RpcSendTransactionConfig::default()
+    };
+
     ////////////////////////////
-    // let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
-    // let instr = system_instruction::create_nonce_account(
-    //     &wallet.pubkey(),
-    //     &nonce_keypair.pubkey(),
-    //     &wallet.pubkey(), // Make the fee wallet the nonce account authority
-    //     nonce_rent,
-    // );
-
-    // let mut tx = Transaction::new_with_payer(&instr, Some(&wallet.pubkey()));
-
-    // let blockhash = rpc_client.get_latest_blockhash().unwrap();
-    // tx.try_sign(&[&nonce_keypair, &wallet], blockhash);
-
-    // let signature=rpc_client.send_and_confirm_transaction(&tx).unwrap();
+    let nonce_rent = rpc_client.get_minimum_balance_for_rent_exemption(State::size()).unwrap();
+    let create_nonce_instruction = system_instruction::create_nonce_account(
+        &wallet.pubkey(),
+        &nonce_keypair.pubkey(),
+        &wallet.pubkey(), // Make the fee wallet the nonce account authority
+        nonce_rent,
+    );
+    let recent_blockhash = rpc_client.get_latest_blockhash().unwrap();
+    let v0_message= v0::Message::try_compile(
+        &wallet.pubkey(),
+        &[create_nonce_instruction],
+        &[],
+        recent_blockhash,
+    ).unwrap();
+    let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
+    // let signature=sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
     // println!("{}", signature);
     ///////////////////////////////////
    
@@ -153,10 +160,7 @@ async fn main(){
     ).unwrap();
     let mut v0_transaction=VersionedTransaction::try_new(VersionedMessage::V0(v0_message), &[wallet]).unwrap();
 
-    let config = RpcSendTransactionConfig {
-        skip_preflight: true,
-        .. RpcSendTransactionConfig::default()
-    };
+    
 
     let result = sender_client.send_transaction_with_config(&v0_transaction, config).unwrap();
 
